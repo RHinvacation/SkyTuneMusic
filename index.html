@@ -151,6 +151,7 @@
     fill: currentColor;
   }
 
+  /* ================= 导航栏按钮 ================= */
   .btn-download {
     display: inline-flex;
     align-items: center;
@@ -162,13 +163,41 @@
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
+    position: relative; /* 为伪元素提供定位基准 */
+    overflow: hidden;   /* 切掉伪元素可能溢出的部分 */
     box-shadow: 0 4px 14px rgba(0,0,0,.4);
-    transition: transform .2s, background .2s;
+    transition: background .2s ease, box-shadow .2s ease;
+  }
+
+  .btn-download::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    /* 模拟内阴影 */
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.25),
+                inset 0 1px 3px rgba(0, 0, 0, 0.15);
+    /* 初始状态：从中间完全隐藏 */
+    clip-path: inset(0 50% 0 50%);
+    /* 动画曲线 */
+    transition: clip-path 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 0;
+    pointer-events: none;
   }
 
   .btn-download:hover {
-    background: #f2f6ff;
-    transform: translateY(-1px);
+    background: #f0f4fa;
+  }
+
+  /* 鼠标悬浮时，clip-path 从中间向两侧展开 */
+  .btn-download:hover::after {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* 确保文字和图标在伪元素之上 */
+  .btn-download svg, .btn-download span {
+    position: relative;
+    z-index: 1;
   }
 
   .btn-download svg {
@@ -206,7 +235,7 @@
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: #080c14; /* 深色背景，对标 DSH */
+    background: #080c14;
     display: flex;
     flex-direction: column;
     padding: 28px 24px 40px;
@@ -358,6 +387,7 @@
     animation: fadeUp .9s cubic-bezier(.2,.8,.2,1) .24s both;
   }
 
+  /* ================= 主下载按钮 ================= */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -371,22 +401,44 @@
     font-weight: 600;
     letter-spacing: .01em;
     text-decoration: none;
+    position: relative; /* 为伪元素提供定位基准 */
+    overflow: hidden;   /* 切掉伪元素可能溢出的部分 */
     box-shadow:
       0 12px 32px -10px rgba(0, 0, 0, .65),
       0 0 0 1px rgba(255, 255, 255, .5) inset;
-    transition: transform .26s cubic-bezier(.2,.8,.2,1),
-                box-shadow .26s, background .26s;
+    transition: background .25s ease, box-shadow .25s ease;
+  }
+
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    /* 模拟内阴影 */
+    box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.2),
+                inset 0 2px 6px rgba(0, 0, 0, 0.15);
+    /* 初始状态：从中间完全隐藏 */
+    clip-path: inset(0 50% 0 50%);
+    /* 动画曲线 */
+    transition: clip-path 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 0;
+    pointer-events: none;
   }
 
   .btn:hover {
-    transform: translateY(-3px);
-    background: #f2f6ff;
-    box-shadow:
-      0 22px 46px -14px rgba(0, 0, 0, .7),
-      0 0 0 1px rgba(255, 255, 255, .8) inset;
+    background: #f5f8ff;
   }
 
-  .btn:active { transform: translateY(-1px); }
+  /* 鼠标悬浮时，clip-path 从中间向两侧展开 */
+  .btn:hover::after {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* 确保文字和图标在伪元素之上 */
+  .btn svg, .btn span {
+    position: relative;
+    z-index: 1;
+  }
 
   .btn:focus-visible {
     outline: 2px solid #8fb4ff;
@@ -664,12 +716,11 @@
 
   /* ================= 响应式 ================= */
   @media (max-width: 860px) {
-    /* 移动端导航栏只显示 Logo 和汉堡 */
     .nav-pill { padding: 20px 22px; }
     .nav-pill.scrolled { max-width: calc(100% - 32px); margin-top: 12px; padding: 6px 6px 6px 16px; }
     
-    .nav-right { display: none; } /* 隐藏桌面端操作区 */
-    .hamburger { display: flex; } /* 显示汉堡菜单 */
+    .nav-right { display: none; }
+    .hamburger { display: flex; }
     
     .hero { padding: 160px 22px 0; }
     .preview-section { margin-top: 80px; padding: 0 16px 80px; }
@@ -729,7 +780,7 @@
             <path d="m7 11 5 5 5-5"/>
             <path d="M5 21h14"/>
           </svg>
-          下载
+          <span>下载</span>
         </a>
       </div>
 
@@ -798,7 +849,7 @@
           <path d="m7 11 5 5 5-5"/>
           <path d="M5 21h14"/>
         </svg>
-        下载 SkyTune for Windows
+        <span>下载 SkyTune for Windows</span>
       </a>
     </div>
 
@@ -898,18 +949,17 @@
 
       function openMenu() {
         mobileMenu.classList.add('open');
-        document.body.style.overflow = 'hidden'; // 防止背景滚动
+        document.body.style.overflow = 'hidden';
       }
 
       function closeMenu() {
         mobileMenu.classList.remove('open');
-        document.body.style.overflow = ''; // 恢复滚动
+        document.body.style.overflow = '';
       }
 
       hamburger.addEventListener('click', openMenu);
       closeBtn.addEventListener('click', closeMenu);
       
-      // 点击菜单项后自动关闭菜单
       mobileLinks.forEach(link => {
         link.addEventListener('click', closeMenu);
       });
